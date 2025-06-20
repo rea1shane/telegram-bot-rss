@@ -1,40 +1,75 @@
 package rss
 
 import (
+	"fmt"
 	"strings"
-
-	"github.com/mmcdole/gofeed"
 )
 
 type filter struct {
-	all     []string
-	title   []string
-	content []string
+	title    filterUnit
+	content  filterUnit
+	category filterUnit
 }
 
-func (f filter) filter(items []*gofeed.Item) (filtered []*gofeed.Item) {
-OUTER:
-	for _, item := range items {
-		for _, keyword := range f.all {
-			if strings.Contains(item.Title, keyword) ||
-				strings.Contains(item.Content, keyword) {
-				continue OUTER
-			}
-		}
+type filterMode string
 
-		for _, keyword := range f.title {
-			if strings.Contains(item.Title, keyword) {
-				continue OUTER
-			}
-		}
+const (
+	filterModeNone       = ""
+	filterModeInclude    = "INCLUDE"
+	filterModeNotInclude = "NOT_INCLUDE"
+	filterModeMatch      = "MATCH"
+	filterModeMismatch   = "MISMATCH"
+)
 
-		for _, keyword := range f.content {
-			if strings.Contains(item.Content, keyword) {
-				continue OUTER
-			}
-		}
+// The item that hits the rule will be retained.
+// If the mode is filterModeNone or the keywords is empty, retain will always return true.
+type filterUnit struct {
+	mode     filterMode
+	keywords []string
+}
 
-		filtered = append(filtered, item)
+func (u filterUnit) retain(input string) bool {
+	if len(u.keywords) == 0 {
+		return true
 	}
-	return
+
+	switch u.mode {
+	case filterModeNone:
+		return true
+
+	case filterModeInclude:
+		for _, keyword := range u.keywords {
+			if strings.Contains(input, keyword) {
+				return true
+			}
+		}
+		return false
+
+	case filterModeNotInclude:
+		for _, keyword := range u.keywords {
+			if strings.Contains(input, keyword) {
+				return false
+			}
+		}
+		return true
+
+	case filterModeMatch:
+		for _, keyword := range u.keywords {
+			if input == keyword {
+				return true
+			}
+		}
+		return false
+
+	case filterModeMismatch:
+		for _, keyword := range u.keywords {
+			if input == keyword {
+				return false
+			}
+		}
+		return true
+
+	default:
+		panic(fmt.Errorf("invalid mode: %s", u.mode))
+	}
 }

@@ -6,21 +6,19 @@ import (
 )
 
 var (
-	url           = "https://feeds.feedburner.com/ruanyifeng"
-	alias         = ""
-	allFilter     []string
-	titleFilter   []string
-	contentFilter []string
+	url   = "https://feeds.feedburner.com/ruanyifeng"
+	alias = ""
 )
 
 func TestSubscription_Fetch(t *testing.T) {
-	sub := newSubscription(url, alias, allFilter, titleFilter, contentFilter)
+	sub := newSubscription(url, alias)
 	name, items, err := sub.Fetch()
 	if err != nil {
 		t.Fatalf("failed to fetch: %v", err)
 	}
 
 	fmt.Printf("Feed name: %s\n", name)
+
 	for _, item := range items {
 		fmt.Println()
 		fmt.Printf("Item GUID:             %s\n", item.GUID)
@@ -32,6 +30,5 @@ func TestSubscription_Fetch(t *testing.T) {
 		fmt.Printf("Item published parsed: %s\n", item.PublishedParsed)
 		fmt.Printf("Item updated:          %s\n", item.Updated)
 		fmt.Printf("Item updated parsed:   %s\n", item.UpdatedParsed)
-
 	}
 }

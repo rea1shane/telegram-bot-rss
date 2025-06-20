@@ -6,15 +6,10 @@ import (
 	"github.com/mmcdole/gofeed"
 )
 
-func newSubscription(url, alias string, allFilter, titleFilter, contentFilter []string) subscription {
+func newSubscription(url, alias string) subscription {
 	return subscription{
 		url:   url,
 		alias: alias,
-		filter: filter{
-			all:     allFilter,
-			title:   titleFilter,
-			content: contentFilter,
-		},
 	}
 }
 
@@ -32,7 +27,7 @@ func (s subscription) Fetch() (string, []*gofeed.Item, error) {
 		return "", nil, fmt.Errorf("failed to get feed: %w", err)
 	}
 
-	return s.getFeedName(feed), s.filter.filter(feed.Items), nil
+	return s.getFeedName(feed), feed.Items, nil
 }
 
 func (s subscription) getFeedName(feed *gofeed.Feed) string {
