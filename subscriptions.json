@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://feeds.feedburner.com/ruanyifeng"
+  },
+  {
+    "url": "https://weekly.tw93.fun/rss.xml",
+    "category": {
+      "mode": "APPEND",
+      "content": [
+        "Weekly"
+      ]
+    }
+  },
+  {
+    "url": "https://hellogithub.com/rss",
+    "category": {
+      "mode": "OVERRIDE",
+      "content": [
+        "Monthly"
+      ]
+    }
+  }
+]
